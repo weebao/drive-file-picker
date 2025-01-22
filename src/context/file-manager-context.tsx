@@ -1,92 +1,58 @@
-"use client"
+"use client";
 
-import React, { createContext, useContext, useMemo } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import type { FileItem } from "@/types/file"
-import { getFiles, toggleIndex } from "@/services/file-client"
+import React, { createContext, useContext, useMemo, useState } from "react";
+import type { FileItem } from "@/types/file";
 
 interface FileManagerProviderProps {
-  path: string
-  searchQuery: string
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 interface FileManagerContextValue {
-  files: FileItem[] | undefined
-  displayed: FileItem[]
-  isLoading: boolean
-  isError: boolean
-  toggleIndexOptimistic: (fileId: string) => void
+  files: FileItem[];
+  setFiles: (files: FileItem[]) => void
+  displayed: FileItem[];
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
-// Converted to arrow function
+const FileManagerContext = createContext<FileManagerContextValue | undefined>(
+  undefined,
+);
+
 export const FileManagerProvider: React.FC<FileManagerProviderProps> = ({
-  path,
-  searchQuery,
   children,
 }) => {
-  const queryClient = useQueryClient()
-
-  const { data: files, isLoading, isError } = useQuery<FileItem[]>({
-    queryKey: ["fileList", path],
-    queryFn: () => getFiles(path),
-  })
-
-  const toggleMutation = useMutation({
-    mutationFn: (fileId: string) => toggleIndex(fileId),
-    onMutate: async (fileId) => {
-      await queryClient.cancelQueries({ queryKey: ["fileList", path] })
-      const prevData = queryClient.getQueryData<FileItem[]>(["fileList", path])
-      if (prevData) {
-        const nextData = prevData.map((f) =>
-          f.id === fileId ? { ...f, isIndexed: !f.isIndexed } : f
-        )
-        queryClient.setQueryData(["fileList", path], nextData)
-      }
-      return { prevData }
-    },
-    onError: (_err, _fileId, context) => {
-      if (context?.prevData) {
-        queryClient.setQueryData(["fileList", path], context.prevData)
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["fileList", path] })
-    },
-  })
-
-  const toggleIndexOptimistic = (fileId: string) => {
-    toggleMutation.mutate(fileId)
-  }
+  const [files, setFiles] = useState<FileItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const displayed = useMemo(() => {
-    if (!files) return []
+    if (!files) return [];
     return files
       .filter((f) => f.path !== "/")
-      .filter((f) => f.name.toLowerCase().includes(searchQuery.toLowerCase()))
-  }, [files, searchQuery])
+      .filter((f) => f.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [files, searchQuery]);
 
   const value: FileManagerContextValue = {
     files,
+    setFiles,
     displayed,
-    isLoading,
-    isError,
-    toggleIndexOptimistic,
-  }
+    searchQuery,
+    setSearchQuery,
+  };
 
   return (
     <FileManagerContext.Provider value={value}>
       {children}
     </FileManagerContext.Provider>
-  )
-}
-
-const FileManagerContext = createContext<FileManagerContextValue | undefined>(undefined)
+  );
+};
 
 export const useFileManagerContext = () => {
-  const ctx = useContext(FileManagerContext)
+  const ctx = useContext(FileManagerContext);
   if (!ctx) {
-    throw new Error("useFileManagerContext must be used within a <FileManagerProvider>")
+    throw new Error(
+      "useFileManagerContext must be used within a <FileManagerProvider>",
+    );
   }
-  return ctx
-}
+  return ctx;
+};

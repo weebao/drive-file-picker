@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { Input } from "@/components/ui/input"
-import { X } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SearchBarProps {
-  value: string
-  onChange: (value: string) => void
-  onClose: () => void
+  value: string;
+  onChange: (value: string) => void;
+  onClose: () => void;
 }
 
 // Single responsibility: present a search input with a close button
@@ -30,5 +30,5 @@ export function SearchBar({ value, onChange, onClose }: SearchBarProps) {
         <X className="h-4 w-4" />
       </Button>
     </div>
-  )
+  );
 }

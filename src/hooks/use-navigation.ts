@@ -1,32 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import type { NavigationState, NavigationActions } from "@/types/navigation"
+import { useState } from "react";
+import type { NavigationState, NavigationActions } from "@/types/navigation";
+import { FolderItem } from "@/types/file";
 
-export function useNavigation(initialPath = "/"): NavigationState & NavigationActions {
-  const [currentPath, setCurrentPath] = useState(initialPath)
-  const [history, setHistory] = useState([initialPath])
-  const [historyIndex, setHistoryIndex] = useState(0)
+export function useNavigation(
+  initialPath = "/",
+): NavigationState & NavigationActions {
+  const [currentPath, setCurrentPath] = useState(initialPath);
+  const [history, setHistory] = useState([initialPath]); // history of resource ids (Visited by react query hopefully)
+  const [historyIndex, setHistoryIndex] = useState(0);
 
   const navigateToFolder = (path: string) => {
-    setCurrentPath(path)
-    setHistory((prev) => [...prev.slice(0, historyIndex + 1), path])
-    setHistoryIndex((prev) => prev + 1)
-  }
+    setCurrentPath(path);
+    setHistory((prev) => [...prev.slice(0, historyIndex + 1), path]);
+    setHistoryIndex((prev) => prev + 1);
+  };
 
   const goBack = () => {
     if (historyIndex > 0) {
-      setHistoryIndex((prev) => prev - 1)
-      setCurrentPath(history[historyIndex - 1])
+      setHistoryIndex((prev) => prev - 1);
+      setCurrentPath(history[historyIndex - 1]);
     }
-  }
+  };
 
   const goForward = () => {
     if (historyIndex < history.length - 1) {
-      setHistoryIndex((prev) => prev + 1)
-      setCurrentPath(history[historyIndex + 1])
+      setHistoryIndex((prev) => prev + 1);
+      setCurrentPath(history[historyIndex + 1]);
     }
-  }
+  };
 
   return {
     currentPath,
@@ -35,5 +38,5 @@ export function useNavigation(initialPath = "/"): NavigationState & NavigationAc
     navigateToFolder,
     goBack,
     goForward,
-  }
+  };
 }

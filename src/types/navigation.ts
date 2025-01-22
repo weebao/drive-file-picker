@@ -1,13 +1,13 @@
-// Single responsibility: describe the shape of navigation state & actions
+import { FolderItem } from "./file";
 
 export interface NavigationState {
-  currentPath: string
-  history: string[]
-  historyIndex: number
+  currentPath: string;
+  history: string[];
+  historyIndex: number;
 }
 
 export interface NavigationActions {
-  navigateToFolder: (path: string) => void
-  goBack: () => void
-  goForward: () => void
+  navigateToFolder: (path: string) => void;
+  goBack: () => void;
+  goForward: () => void;
 }

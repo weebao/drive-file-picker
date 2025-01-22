@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextResponse } from "next/server";
 
 let kbInitialized = false;
 let kbSession: KnowledgeBaseSession;
@@ -12,7 +12,12 @@ class KnowledgeBaseSession {
     this.headers = headers;
   }
 
-  async createKnowledgeBase(name: string, description: string, connectionId: string, sourceIds: string[]) {
+  async createKnowledgeBase(
+    name: string,
+    description: string,
+    connectionId: string,
+    sourceIds: string[],
+  ) {
     // POST to /knowledge_bases with similar data to notebook
     // const createKbUrl = `${process.env.AUTH_URL}/knowledge_bases`
     // ...existing code...

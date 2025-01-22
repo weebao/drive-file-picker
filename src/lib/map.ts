@@ -21,4 +21,4 @@ const extensionToKindMap: Record<string, FileKind> = {
 
 export const getKind = (extension: string): FileKind => {
   return extensionToKindMap[extension] || "File";
-}
+};

@@ -20,7 +20,7 @@ class DriveSession {
       body: JSON.stringify({
         email: process.env.AUTH_EMAIL,
         password: process.env.AUTH_PASSWORD,
-        "gotrue_meta_security": {}
+        gotrue_meta_security: {},
       }),
     });
     if (!authRes.ok) {
@@ -31,11 +31,13 @@ class DriveSession {
     this.headers = {
       Authorization: `Bearer ${authData.access_token}`,
       "Content-Type": "application/json",
-    }
+    };
 
     // Fetch connections
     const connectionsUrl = `${process.env.AUTH_URL}/connections?connection_provider=gdrive&limit=1`;
-    const connectionsRes = await fetch(connectionsUrl, { headers: this.headers });
+    const connectionsRes = await fetch(connectionsUrl, {
+      headers: this.headers,
+    });
     if (!connectionsRes.ok) {
       throw new Error("Failed to fetch connections");
     }
@@ -54,7 +56,6 @@ class DriveSession {
     const url = resourceId
       ? `${this.resourceUrl}?resource_id=${resourceId}`
       : `${this.resourceUrl}`;
-    console.log("URLLL :  ", url);
     const res = await fetch(url, { headers: this.headers });
     if (!res.ok) {
       throw new Error("Failed to fetch resources");
@@ -67,10 +68,15 @@ const driveSession = new DriveSession();
 
 // GET /api/drive?resourceId=/...
 export const GET = async (request: Request) => {
+  if (!driveSession.initialized) {
+    await driveSession.init();
+  }
   try {
     const url = new URL(request.url);
     const resourceId = url.searchParams.get("resourceId");
     const files = await driveSession.getResource(resourceId);
+    console.log(files);
+    // const files: any[] = [];
     return NextResponse.json(files);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

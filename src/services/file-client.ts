@@ -1,16 +1,20 @@
 // /src/services/file-client.ts
-"use client"
+"use client";
 
-import { processFile } from "@/lib/utils"
-import type { FileItem } from "@/types/file"
+import { processFile } from "@/lib/utils";
+import type { FileItem } from "@/types/file";
 
-export async function getFiles(resourceId: string): Promise<FileItem[]> {
-  const res = await fetch(`/api/drive?resourceId=${encodeURIComponent(resourceId)}`)
+export async function getFiles(resourceId?: string): Promise<FileItem[]> {
+  const queryParams = resourceId
+    ? `?resourceId=${encodeURIComponent(resourceId)}`
+    : "";
+  const res = await fetch(`/api/drive${queryParams}`);
   if (!res.ok) {
-    throw new Error("Failed to fetch files.")
+    throw new Error("Failed to fetch files.");
   }
-  const data = await res.json()
-  return data.map((fileData: any) => processFile(fileData)) as FileItem[]
+  const data = await res.json();
+  console.log(data);
+  return data.map((fileData: any) => processFile(fileData)) as FileItem[];
 }
 
 export async function toggleIndex(fileId: string): Promise<void> {
@@ -18,9 +22,9 @@ export async function toggleIndex(fileId: string): Promise<void> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ fileId, toggleIndex: true }),
-  })
+  });
   if (!res.ok) {
-    throw new Error("Failed to toggle index on file.")
+    throw new Error("Failed to toggle index on file.");
   }
 }
 
@@ -31,8 +35,8 @@ export async function deleteFiles(fileIds: string[]): Promise<void> {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ fileIds }),
-  })
+  });
   if (!res.ok) {
-    throw new Error("Failed to delete files.")
+    throw new Error("Failed to delete files.");
   }
 }

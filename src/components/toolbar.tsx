@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Grid, List, Search } from "lucide-react"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { SearchBar } from "./search-bar"
-import { Button } from "@/components/ui/button"
-import type { ViewMode } from "@/types/view"
+import { useState } from "react";
+import { Grid, List, Search } from "lucide-react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { SearchBar } from "./search-bar";
+import { Button } from "@/components/ui/button";
+import type { ViewMode } from "@/types/view";
 
 interface ToolbarProps {
-  viewMode: ViewMode
-  onViewModeChange: (mode: ViewMode) => void
-  searchQuery: string
-  onSearchChange: (query: string) => void
+  viewMode: ViewMode;
+  onViewModeChange: (mode: ViewMode) => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
 }
 
 // Single responsibility: top-level toolbar with toggle for grid/list + search
@@ -21,7 +21,7 @@ export function Toolbar({
   searchQuery,
   onSearchChange,
 }: ToolbarProps) {
-  const [searchVisible, setSearchVisible] = useState(false)
+  const [searchVisible, setSearchVisible] = useState(false);
 
   return (
     <div className="flex items-center gap-2">
@@ -45,10 +45,14 @@ export function Toolbar({
           onClose={() => setSearchVisible(false)}
         />
       ) : (
-        <Button variant="ghost" size="icon" onClick={() => setSearchVisible(true)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSearchVisible(true)}
+        >
           <Search className="h-4 w-4" />
         </Button>
       )}
     </div>
-  )
+  );
 }

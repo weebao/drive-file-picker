@@ -1,18 +1,21 @@
 import React from "react";
 import {
-  FileText,
   Image,
   AudioLines,
   Video,
+  File,
   FileCode,
+  FileText,
   FileType,
   FileSpreadsheet,
+  Folder,
   FolderArchive,
   LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FileItem } from "@/types/file";
 
-const extensionToIcon: Record<string, { icon: LucideIcon, class: string }> = {
+const extensionToIcon: Record<string, { icon: LucideIcon; class: string }> = {
   ".txt": {
     icon: FileText,
     class: "text-black",
@@ -80,11 +83,14 @@ const extensionToIcon: Record<string, { icon: LucideIcon, class: string }> = {
 };
 
 interface FileIconProps {
-  extension: string;
+  file: FileItem;
   className?: string;
 }
 
-export const FileIcon: React.FC<FileIconProps> = ({ extension, className }) => {
-  const { icon: Icon, class: colorClass } = extensionToIcon[extension] || { icon: FileType, class: "text-black" };
-  return <Icon className={cn(className, colorClass)} />;
-}
+export const FileIcon: React.FC<FileIconProps> = ({ file, className }) => {
+  const { icon: Icon, class: colorClass } =
+    file.kind === "Folder"
+      ? { icon: Folder, class: "text-black" }
+      : extensionToIcon[file.extension] || { icon: File, class: "text-black" };
+  return <Icon className={cn(className, colorClass, "w-6 h-6")} />;
+};
