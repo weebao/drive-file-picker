@@ -35,7 +35,7 @@ export async function listGoogleDriveFiles() {
     name: gf.name || "Untitled",
     kind: gf.mimeType?.includes("folder") ? "Folder" : "File",
     path: `/${gf.name}`, // or some logic to build path
-    dateModified: gf.modifiedTime || new Date().toISOString(),
+    lastModified: gf.modifiedTime || new Date().toISOString(),
     isIndexed: false,
   })) as FileItem[]
 }

@@ -1,14 +1,16 @@
-// Single responsibility: store the file item shape + sorting fields
+export type FileKind = "Text" | "PDF" | "Video" | "Audio" | "Image" | "Spreadsheet" | "Presentation" | "Archive" | "Code" | "Folder";
+
 export interface FileItem {
-  id: string
-  name: string
-  kind: "File" | "Folder"
-  path: string
-  dateModified: string
-  isIndexed: boolean
-  thumbnail?: string
+  id: string;
+  name: string;
+  kind: FileKind;
+  path: string;
+  lastModified: string;
+  isIndexed: boolean;
+  webUrl?: string;
+  resourceId?: string;
 }
 
 // Sorting fields for demonstration
-export type SortField = "name" | "dateModified" | "kind"
-export type SortDirection = "asc" | "desc"
+export type SortField = "name" | "lastModified" | "kind";
+export type SortDirection = "asc" | "desc";

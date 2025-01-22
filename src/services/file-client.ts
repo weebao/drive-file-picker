@@ -1,15 +1,16 @@
 // /src/services/file-client.ts
 "use client"
 
+import { processFile } from "@/lib/utils"
 import type { FileItem } from "@/types/file"
 
-export async function getFiles(path: string): Promise<FileItem[]> {
-  const res = await fetch(`/api/file?path=${encodeURIComponent(path)}`)
+export async function getFiles(resourceId: string): Promise<FileItem[]> {
+  const res = await fetch(`/api/drive?resourceId=${encodeURIComponent(resourceId)}`)
   if (!res.ok) {
     throw new Error("Failed to fetch files.")
   }
-  const json = await res.json()
-  return json.files as FileItem[]
+  const data = await res.json()
+  return data.map((fileData: any) => processFile(fileData)) as FileItem[]
 }
 
 export async function toggleIndex(fileId: string): Promise<void> {

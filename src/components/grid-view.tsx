@@ -1,58 +1,54 @@
-"use client"
+"use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Folder, FileIcon, MoreHorizontal } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Skeleton } from "@/components/ui/skeleton"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { MoreHorizontal } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { FileIcon } from "@/components/file-icon";
 
-import type { FileItem } from "@/types/file"
-import { getFiles, toggleIndex } from "@/services/file-client"
+import type { FileItem } from "@/types/file";
+import { getFiles, toggleIndex } from "@/services/file-client";
+import { extractExtension } from "@/lib/utils";
 
 interface GridViewProps {
-  path: string
-  searchQuery: string
-  onNavigate: (path: string) => void
+  path: string;
+  root?: FileItem;
+  searchQuery: string;
+  onNavigate: (path: string) => void;
 }
 
 export function GridView({ path, searchQuery, onNavigate }: GridViewProps) {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   // 1) Load data with React Query
   const { data, isLoading, isError } = useQuery({
     queryKey: ["fileList", path],
     queryFn: () => getFiles(path),
-  })
+  });
 
   // 2) Mutation for toggling isIndexed (optimistic updates)
   const toggleMutation = useMutation({
     mutationFn: (fileId: string) => toggleIndex(fileId),
     onMutate: async (fileId) => {
-      await queryClient.cancelQueries({ queryKey: ["fileList", path] })
-      const prevData = queryClient.getQueryData<FileItem[]>(["fileList", path])
+      await queryClient.cancelQueries({ queryKey: ["fileList", path] });
+      const prevData = queryClient.getQueryData<FileItem[]>(["fileList", path]);
       if (prevData) {
-        const nextData = prevData.map((f) =>
-          f.id === fileId ? { ...f, isIndexed: !f.isIndexed } : f
-        )
-        queryClient.setQueryData(["fileList", path], nextData)
+        const nextData = prevData.map((f) => (f.id === fileId ? { ...f, isIndexed: !f.isIndexed } : f));
+        queryClient.setQueryData(["fileList", path], nextData);
       }
-      return { prevData }
+      return { prevData };
     },
     onError: (err, fileId, context) => {
       if (context?.prevData) {
-        queryClient.setQueryData(["fileList", path], context.prevData)
+        queryClient.setQueryData(["fileList", path], context.prevData);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["fileList", path] })
+      queryClient.invalidateQueries({ queryKey: ["fileList", path] });
     },
-  })
+  });
 
   // 3) Skeleton if loading
   if (isLoading) {
@@ -62,16 +58,14 @@ export function GridView({ path, searchQuery, onNavigate }: GridViewProps) {
           <Skeleton key={i} className="h-20 w-full" />
         ))}
       </div>
-    )
+    );
   }
   if (isError) {
-    return <div className="text-red-500">Error loading files!</div>
+    return <div className="text-red-500">Error loading files!</div>;
   }
 
   // 4) Filter by search
-  const filtered = (data || []).filter((file) =>
-    file.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filtered = (data || []).filter((file) => file.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   // 5) Render
   return (
@@ -113,26 +107,12 @@ export function GridView({ path, searchQuery, onNavigate }: GridViewProps) {
             className="w-full h-full p-4 flex flex-col items-center gap-2 hover:bg-accent"
             onClick={() => file.kind === "Folder" && onNavigate(file.path)}
           >
-            {file.thumbnail ? (
-              <img
-                src={file.thumbnail}
-                alt={file.name}
-                className="w-20 h-20 object-cover rounded"
-              />
-            ) : file.kind === "Folder" ? (
-              <Folder className="w-20 h-20" />
-            ) : (
-              <FileIcon className="w-20 h-20" />
-            )}
+            <FileIcon extension={extractExtension(file.name)} className="h-12 w-12" />
             <span className="text-sm text-center break-words">{file.name}</span>
           </Button>
         </div>
       ))}
-      {filtered.length === 0 && (
-        <div className="col-span-full text-center text-muted-foreground">
-          No files found.
-        </div>
-      )}
+      {filtered.length === 0 && <div className="col-span-full text-center text-muted-foreground">No files found.</div>}
     </div>
-  )
+  );
 }

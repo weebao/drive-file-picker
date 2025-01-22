@@ -97,13 +97,13 @@ export const fileColumns: ColumnDef<FileItem>[] = [
   },
   // 4) Date Modified
   {
-    accessorKey: "dateModified",
+    accessorKey: "lastModified",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date Modified" />
     ),
     enableSorting: true,
     cell: ({ row }) => {
-      const date = new Date(row.getValue("dateModified"))
+      const date = new Date(row.getValue("lastModified"))
       return date.toLocaleString()
     },
   },
