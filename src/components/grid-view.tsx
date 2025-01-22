@@ -79,15 +79,15 @@ export function GridView({ path, searchQuery, onNavigate }: GridViewProps) {
       {filtered.map((file) => (
         <div key={file.id} className="relative group">
           {/* isIndexed checkbox */}
-          <div className="absolute top-2 left-2 z-10">
+          {/* <div className="absolute top-2 left-2 z-10">
             <Checkbox
               checked={file.isIndexed}
               onCheckedChange={() => toggleMutation.mutate(file.id)}
             />
-          </div>
+          </div> */}
 
           {/* actions */}
-          <div className="absolute top-2 right-2 z-10">
+          {/* <div className="absolute top-2 right-2 z-10">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
@@ -106,7 +106,7 @@ export function GridView({ path, searchQuery, onNavigate }: GridViewProps) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          </div> */}
 
           <Button
             variant="ghost"

@@ -25,7 +25,7 @@ export function FileBreadcrumb({ path, onNavigate }: FileBreadcrumbProps) {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink onClick={() => onNavigate("/")}>
-            <Home className="h-4 w-4" />
+            <Home className="h-4 w-4 cursor-pointer" />
           </BreadcrumbLink>
         </BreadcrumbItem>
         {segments.map((segment, index) => {
@@ -39,7 +39,7 @@ export function FileBreadcrumb({ path, onNavigate }: FileBreadcrumbProps) {
                 {isLast ? (
                   <BreadcrumbPage>{segment}</BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink onClick={() => onNavigate(currentPath)}>
+                  <BreadcrumbLink onClick={() => onNavigate(currentPath)} className="cursor-pointer">
                     {segment}
                   </BreadcrumbLink>
                 )}

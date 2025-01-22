@@ -70,7 +70,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       {/* Single input to filter by a default column */}
-      {defaultColumnFilter && (
+      {/* {defaultColumnFilter && (
         <Input
           placeholder={filterPlaceholder}
           value={(table.getColumn(defaultColumnFilter)?.getFilterValue() as string) || ""}
@@ -81,10 +81,10 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-      )}
+      )} */}
 
       {/* Column visibility dropdown */}
-      <DropdownMenu>
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="ml-auto">
             Columns
@@ -105,7 +105,7 @@ export function DataTable<TData, TValue>({
               </DropdownMenuCheckboxItem>
             ))}
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
 
       {/* The table */}
       <div className="rounded-md border">
@@ -134,9 +134,9 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
                   ))}
                 </TableRow>
               ))
@@ -152,7 +152,7 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Pagination controls */}
-      <div className="flex items-center justify-end space-x-2 py-2">
+      {/* <div className="flex items-center justify-end space-x-2 py-2">
         <Button
           variant="outline"
           size="sm"
@@ -169,7 +169,7 @@ export function DataTable<TData, TValue>({
         >
           Next
         </Button>
-      </div>
+      </div> */}
     </div>
   )
 }

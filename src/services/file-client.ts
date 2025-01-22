@@ -1,8 +1,8 @@
+// /src/services/file-client.ts
 "use client"
 
 import type { FileItem } from "@/types/file"
 
-// 1) GET files from /api/file?path=...
 export async function getFiles(path: string): Promise<FileItem[]> {
   const res = await fetch(`/api/file?path=${encodeURIComponent(path)}`)
   if (!res.ok) {
@@ -12,7 +12,6 @@ export async function getFiles(path: string): Promise<FileItem[]> {
   return json.files as FileItem[]
 }
 
-// 2) Toggle "isIndexed" (or other updates). POST /api/file
 export async function toggleIndex(fileId: string): Promise<void> {
   const res = await fetch("/api/file", {
     method: "POST",
@@ -21,5 +20,18 @@ export async function toggleIndex(fileId: string): Promise<void> {
   })
   if (!res.ok) {
     throw new Error("Failed to toggle index on file.")
+  }
+}
+
+// For the new "delete" action in ActionMenu
+export async function deleteFiles(fileIds: string[]): Promise<void> {
+  // Suppose you pass them in the request body
+  const res = await fetch("/api/file", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fileIds }),
+  })
+  if (!res.ok) {
+    throw new Error("Failed to delete files.")
   }
 }
