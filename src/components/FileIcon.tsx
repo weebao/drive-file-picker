@@ -12,7 +12,7 @@ import {
   FolderArchive,
   LucideIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/client/utils";
 import { FileItem } from "@/types/file";
 
 const extensionToIcon: Record<string, { icon: LucideIcon; class: string }> = {

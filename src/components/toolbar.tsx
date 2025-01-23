@@ -1,58 +1,122 @@
 "use client";
 
-import { useState } from "react";
-import { Grid, List, Search } from "lucide-react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { SearchBar } from "./SearchBar";
+import { useEffect, useState } from "react";
+import { Grid, List, Search, RefreshCw } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+import { SearchBar } from "./SearchBar";
+
 import type { ViewMode } from "@/types/view";
+import { KnowledgeBaseSelect } from "./KnowledgeBaseSelect";
+import { cn } from "@/lib/client/utils";
 
 interface ToolbarProps {
   viewMode: ViewMode;
-  onViewModeChange: (mode: ViewMode) => void;
   searchQuery: string;
+  isRefetching?: boolean;
+  onViewModeChange: (mode: ViewMode) => void;
   onSearchChange: (query: string) => void;
+  onCreateKb: () => void;
+  reload: () => void;
 }
 
 // Single responsibility: top-level toolbar with toggle for grid/list + search
 export function Toolbar({
   viewMode,
-  onViewModeChange,
   searchQuery,
+  isRefetching,
+  onViewModeChange,
   onSearchChange,
+  onCreateKb,
+  reload,
 }: ToolbarProps) {
   const [searchVisible, setSearchVisible] = useState(false);
+  const [isReloading, setIsReloading] = useState(false);
 
   return (
-    <div className="flex items-center gap-2">
-      <ToggleGroup
-        type="single"
-        value={viewMode}
-        onValueChange={(value: string) => onViewModeChange(value as ViewMode)}
-      >
-        <ToggleGroupItem value="grid" aria-label="Grid view">
-          <Grid className="h-4 w-4" />
-        </ToggleGroupItem>
-        <ToggleGroupItem value="list" aria-label="List view">
-          <List className="h-4 w-4" />
-        </ToggleGroupItem>
-      </ToggleGroup>
+    <TooltipProvider delayDuration={300}>
+      <div className="flex items-center gap-2">
+        <KnowledgeBaseSelect onCreateKb={onCreateKb} />
 
-      {searchVisible ? (
-        <SearchBar
-          value={searchQuery}
-          onChange={onSearchChange}
-          onClose={() => setSearchVisible(false)}
-        />
-      ) : (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setSearchVisible(true)}
+        <ToggleGroup
+          type="single"
+          value={viewMode}
+          onValueChange={(value: string) => onViewModeChange(value as ViewMode)}
         >
-          <Search className="h-4 w-4" />
-        </Button>
-      )}
-    </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToggleGroupItem value="grid" aria-label="Grid view">
+                <Grid className="h-4 w-4" />
+              </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Grid View</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToggleGroupItem value="list" aria-label="List view">
+                <List className="h-4 w-4" />
+              </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>List View</p>
+            </TooltipContent>
+          </Tooltip>
+        </ToggleGroup>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={isRefetching}
+              onClick={() => reload()}
+            >
+              <RefreshCw
+                className={cn("h-4 w-4", isRefetching ? "animate-spin" : "")}
+              />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Reload</p>
+          </TooltipContent>
+        </Tooltip>
+
+        {searchVisible ? (
+          <SearchBar
+            value={searchQuery}
+            onChange={onSearchChange}
+            onClose={() => {
+              onSearchChange("");
+              setSearchVisible(false);
+            }}
+          />
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSearchVisible(true)}
+              >
+                <Search className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Search</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
+      </div>
+    </TooltipProvider>
   );
 }

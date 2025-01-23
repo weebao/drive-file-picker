@@ -1,60 +1,66 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getFiles, toggleIndex } from "@/services/FileService";
+import { getFiles } from "@/services/FileService";
+import {
+  getFilesFromKb,
+  removeFileFromKb,
+} from "@/services/KnowledgeBaseService";
 import type { FileItem } from "@/types/file";
+import { useKnowledgeBaseContext } from "@/context/KnowledgeBaseContext";
 
 export function useFiles() {
   const [root, setRoot] = useState<FileItem>();
+  const { selectedKb: kb } = useKnowledgeBaseContext();
   const queryClient = useQueryClient();
 
-  const { data, isLoading, isSuccess, isError } = useQuery({
-    queryKey: ["fileList", root?.resourceId],
-    queryFn: () => getFiles(root?.resourceId),
-  });
+  const { data, isLoading, isRefetching, isSuccess, isError, refetch } =
+    useQuery({
+      queryKey: ["fileList", root?.id, kb],
+      queryFn: () => {
+        return kb ? getFilesFromKb(kb, root?.path || "/") : getFiles(root?.id);
+      },
+    });
 
-  const toggleMutation = useMutation({
-    mutationFn: (fileId: string) => toggleIndex(fileId),
-    onMutate: async (fileId) => {
+  const removeIndexMutation = useMutation({
+    mutationFn: (file: FileItem) => removeFileFromKb(root?.id || "", file.path),
+    onMutate: async (file) => {
       await queryClient.cancelQueries({
-        queryKey: ["fileList", root?.resourceId],
+        queryKey: ["fileList", root?.id, kb],
       });
       const prevData = queryClient.getQueryData<FileItem[]>([
         "fileList",
-        root?.resourceId,
+        root?.id,
+        kb,
       ]);
       if (prevData) {
-        const nextData = prevData.map((f) =>
-          f.id === fileId ? { ...f, isIndexed: !f.isIndexed } : f,
-        );
-        queryClient.setQueryData(["fileList", root?.resourceId], nextData);
+        const nextData = prevData.filter((f) => f.id !== file.id);
+        queryClient.setQueryData(["fileList", root?.id, kb], nextData);
       }
       return { prevData };
     },
-    onError: (_err, _fileId, context) => {
+    onError: (_err, _file, context) => {
       if (context?.prevData) {
-        queryClient.setQueryData(
-          ["fileList", root?.resourceId],
-          context.prevData,
-        );
+        queryClient.setQueryData(["fileList", root?.id, kb], context.prevData);
       }
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ["fileList", root?.resourceId],
+        queryKey: ["fileList", root?.id, kb],
       });
     },
   });
 
-  const toggleIndexOptimistic = (fileId: string) =>
-    toggleMutation.mutate(fileId);
+  const removeIndex = (file: FileItem) => removeIndexMutation.mutate(file);
 
   return {
     root,
     setRoot,
     files: data || [],
     isLoading,
+    isRefetching,
     isSuccess,
     isError,
-    toggleIndexOptimistic,
+    removeIndex,
+    reload: refetch,
   };
 }

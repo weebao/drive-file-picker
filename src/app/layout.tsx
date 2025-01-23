@@ -1,7 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter } from "next/font/google";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Providers from "./providers";
 
@@ -20,7 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       {/* <head>
-        <script src="https://unpkg.com/react-scan/dist/auto.global.js" async />
+        <Script
+          src="https://unpkg.com/react-scan/dist/auto.global.js"
+          async
+          strategy="beforeInteractive"
+        />
       </head> */}
       <body className={inter.className}>
         <Providers>

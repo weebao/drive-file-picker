@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 
+import { useFileManagerContext } from "@/context/FileManagerContext";
+import { useKnowledgeBaseContext } from "@/context/KnowledgeBaseContext";
+
 import { NavigationControls } from "@/components/navigation/NavigationControls";
 import { FileBreadcrumb } from "@/components/navigation/FileBreadcrumb";
 import { ListView } from "@/components/view/ListView";
 import { GridView } from "@/components/view/GridView";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Toolbar } from "./toolbar";
+import { Toolbar } from "./Toolbar";
 
 import type { ViewMode } from "@/types/view";
 import type {
@@ -19,12 +22,30 @@ import type {
 
 import { useFiles } from "@/hooks/useFiles";
 import { useNavigation } from "@/hooks/useNavigation";
-import { useFileManagerContext } from "@/context/FileManagerContext";
+import { TableSkeleton } from "./TableSkeleton";
+import { createKnowledgeBase } from "@/services/KnowledgeBaseService";
 
-// Single responsibility: orchestrates the file manager UI
 export default function FileManager() {
-  const { root, files, setRoot, isLoading, isSuccess, isError } = useFiles();
+  const {
+    root,
+    files,
+    setRoot,
+    isLoading,
+    isRefetching,
+    isSuccess,
+    isError,
+    reload,
+  } = useFiles();
   const { setFiles, searchQuery, setSearchQuery } = useFileManagerContext();
+  const {
+    kbList,
+    isCreating,
+    isSelecting,
+    setIsCreating,
+    setIsSelecting,
+    setKbList,
+    setSelectedKb,
+  } = useKnowledgeBaseContext();
   const {
     currentPath,
     history,
@@ -33,29 +54,24 @@ export default function FileManager() {
     goBack,
     goForward,
   } = useNavigation();
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [visitedPaths, setVisitedPaths] = useState<Record<string, FolderItem>>(
     {},
   );
-
   const [viewMode, setViewMode] = useState<ViewMode>("list");
-  const [sortField, setSortField] = useState<SortField>("name");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess || !isRefetching) {
       setFiles(files);
     }
-  }, [isSuccess, setFiles]);
+  }, [isSuccess, isRefetching, setFiles]);
 
-  // Switch field or toggle asc/desc
-  const handleSort = (field: SortField) => {
-    if (field === sortField) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
+  useEffect(() => {
+    if (!isSelecting) {
+      setSelectedIds([]);
     }
-  };
+  }, [isSelecting]);
 
   const handleNavigateToFolder = (folder: FolderItem) => {
     navigateToFolder(folder.path);
@@ -71,8 +87,18 @@ export default function FileManager() {
     }
   };
 
+  const handleCreateKb = async () => {
+    setIsCreating(true);
+    const kbId = await createKnowledgeBase(selectedIds);
+    console.log(kbId);
+    setSelectedKb(kbId);
+    setKbList([...kbList, kbId]);
+    setIsCreating(false);
+    setIsSelecting(false);
+  };
+
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-[600px] bg-background">
       {/* Header area */}
       <div className="border-b">
         <div className="flex items-center p-2 gap-2">
@@ -89,9 +115,12 @@ export default function FileManager() {
           <div className="ml-auto">
             <Toolbar
               viewMode={viewMode}
-              onViewModeChange={setViewMode}
               searchQuery={searchQuery}
+              isRefetching={isRefetching}
+              onViewModeChange={setViewMode}
               onSearchChange={setSearchQuery}
+              onCreateKb={handleCreateKb}
+              reload={reload}
             />
           </div>
         </div>
@@ -100,35 +129,21 @@ export default function FileManager() {
       {/* Main content */}
       <div className="flex-1 overflow-auto p-4">
         {isLoading ? (
-          viewMode === "list" ? (
-            <div className="space-y-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-8 w-full" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-20 w-full" />
-              ))}
-            </div>
-          )
+          <TableSkeleton type={viewMode} />
         ) : isError ? (
           <div className="text-red-500">Error loading files!</div>
         ) : viewMode === "list" ? (
           <ListView
-            root={root}
-            sortField={sortField}
-            sortDirection={sortDirection}
-            onSort={handleSort}
-            searchQuery={searchQuery}
+            isSelecting={isSelecting}
+            selectedIds={selectedIds}
+            setSelectedIds={setSelectedIds}
             onNavigate={handleNavigateToFolder}
           />
         ) : (
           <GridView
-            root={root}
-            path={currentPath}
-            searchQuery={searchQuery}
+            isSelecting={isSelecting}
+            selectedIds={selectedIds}
+            setSelectedIds={setSelectedIds}
             onNavigate={handleNavigateToFolder}
           />
         )}

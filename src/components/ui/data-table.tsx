@@ -11,6 +11,8 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
+  type OnChangeFn,
+  type RowSelectionState,
 } from "@tanstack/react-table";
 
 import {
@@ -23,38 +25,16 @@ import {
 } from "@/components/ui/table";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  rowFunction?: (row: TData) => void;
+  table: ReturnType<typeof useReactTable<TData>>;
+  onRowClick?: (row: TData) => void;
+  onRowDoubleClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
-  columns,
-  data,
-  rowFunction,
+  table,
+  onRowClick,
+  onRowDoubleClick,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-
-  const table = useReactTable({
-    data,
-    columns,
-    state: { sorting, columnFilters, columnVisibility, rowSelection },
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
-
   return (
     <div className="space-y-4">
       <div className="rounded-md border">
@@ -81,9 +61,16 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={rowFunction ? "cursor-pointer" : ""}
+                  className={
+                    onRowClick || onRowDoubleClick ? "cursor-pointer" : ""
+                  }
                   onClick={
-                    rowFunction ? () => rowFunction(row.original) : undefined
+                    onRowClick ? () => onRowClick(row.original) : undefined
+                  }
+                  onDoubleClick={
+                    onRowDoubleClick
+                      ? () => onRowDoubleClick(row.original)
+                      : undefined
                   }
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -99,7 +86,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
                   No results.

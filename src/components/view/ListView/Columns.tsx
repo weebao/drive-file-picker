@@ -66,7 +66,6 @@ export const fileColumns: ColumnDef<FileItem>[] = [
     enableSorting: false,
     enableColumnFilter: false,
   },
-  // Name (sortable)
   {
     id: "name",
     accessorKey: "name",
@@ -77,28 +76,24 @@ export const fileColumns: ColumnDef<FileItem>[] = [
       const file = row.original;
       return (
         <div className="flex items-center">
-          <FileIcon file={file} className="!h-5 !w-5 mr-2 stroke-[1.5] opacity-70" />
+          <FileIcon
+            file={file}
+            className="!h-5 !w-5 mr-2 stroke-[1.5] opacity-70"
+          />
           <span>{file.name}</span>
         </div>
       );
     },
     enableSorting: true,
   },
-  // Indexed column -> Check or X
   {
-    id: "indexed",
-    accessorKey: "indexed",
+    id: "status",
+    accessorKey: "status",
     enableSorting: true,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Indexed" />
+      <DataTableColumnHeader column={column} title="Status" />
     ),
-    sortingFn: (rowA, rowB) => {
-      const a = rowA.original.isIndexed ? 1 : 0;
-      const b = rowB.original.isIndexed ? 1 : 0;
-      return a - b;
-    },
   },
-  // Last Modified
   {
     id: "lastModified",
     accessorKey: "lastModified",
@@ -111,7 +106,6 @@ export const fileColumns: ColumnDef<FileItem>[] = [
       return date.toLocaleString();
     },
   },
-  // Kind
   {
     id: "kind",
     accessorKey: "kind",

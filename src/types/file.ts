@@ -10,6 +10,8 @@ export type FileKind =
   | "Code"
   | "Folder";
 
+export type FileIndexStatus = "indexed" | "pending" | "unknown";
+
 export interface FileItem {
   id: string;
   name: string;
@@ -17,7 +19,7 @@ export interface FileItem {
   kind: FileKind;
   path: string;
   lastModified: string;
-  isIndexed: boolean;
+  status?: FileIndexStatus;
   webUrl?: string;
   resourceId?: string;
 }

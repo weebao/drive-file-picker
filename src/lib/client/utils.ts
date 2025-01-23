@@ -25,8 +25,7 @@ export const processFile = (fileData: any): FileItem => {
       : getKind(extractExtension(fileData.inode_path.path)),
     path: fileData.inode_path.path,
     lastModified: fileData.modified_at,
-    isIndexed: fileData.indexed_at !== null,
+    status: fileData.status,
     webUrl: fileData.dataloader_metadata.web_url,
-    resourceId: fileData.resource_id,
   };
 };
