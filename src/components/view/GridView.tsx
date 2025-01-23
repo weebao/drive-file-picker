@@ -49,7 +49,7 @@ export function GridView({
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-start">
       {displayed.map((file) => (
-        <div key={file.id} className="relative group">
+        <div key={file.id + file.path} className="relative group">
           {isSelecting && (
             <Checkbox
               className="absolute left-2 top-2 shadow"
