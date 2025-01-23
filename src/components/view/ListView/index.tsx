@@ -25,19 +25,15 @@ import { fileColumns } from "./Columns";
 
 import { useFiles } from "@/hooks/useFiles";
 
-import type {
-  FileItem,
-  SortField,
-  SortDirection,
-  FolderItem,
-} from "@/types/file";
+import type { FileItem } from "@/types/file";
 import { ToggleIndexBtn } from "@/components/ToggleIndexBtn";
 
 interface ListViewProps {
   isSelecting?: boolean;
   selectedIds?: string[];
   setSelectedIds: (ids: string[]) => void;
-  onNavigate: (folder: FolderItem) => void;
+  onNavigate: (folderId: string, folderPath: string) => void;
+  removeIndex: (file: FileItem) => void;
 }
 
 export function ListView({
@@ -45,9 +41,9 @@ export function ListView({
   selectedIds,
   setSelectedIds,
   onNavigate,
+  removeIndex,
 }: ListViewProps) {
-  const { setFiles, displayed } = useFileManagerContext();
-  const { files, isLoading, isSuccess, isError, setRoot } = useFiles();
+  const { displayed } = useFileManagerContext();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -62,7 +58,12 @@ export function ListView({
           ...col,
           cell: ({ row }: CellContext<FileItem, unknown>) => {
             const file = row.original;
-            return <ToggleIndexBtn status={file.status} onToggle={() => {}} />;
+            return (
+              <ToggleIndexBtn
+                status={file.status}
+                onRemove={() => removeIndex(file)}
+              />
+            );
           },
         };
       }
@@ -70,6 +71,7 @@ export function ListView({
     })
     .filter((col) => col.id !== "select" || isSelecting);
 
+  // Set up react table
   const table = useReactTable<FileItem>({
     data: displayed,
     columns,
@@ -78,7 +80,7 @@ export function ListView({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: (updaterOrValue) => {
-      // This's how it's defined in tanstack table
+      // Update file selections for fetching
       const newSelection =
         typeof updaterOrValue === "function"
           ? updaterOrValue(rowSelection)
@@ -93,10 +95,10 @@ export function ListView({
   });
 
   // Navigate through folder function or open file
-  const handleNavigateToFolder = (file: FileItem) => {
+  const handleClick = (file: FileItem) => {
     if (isSelecting) return;
     if (file.kind === "Folder") {
-      onNavigate(file as FolderItem);
+      onNavigate(file.id, file.path);
     } else {
       window.open(file.webUrl, "_blank")?.focus();
     }
@@ -113,5 +115,5 @@ export function ListView({
     }
   }, [selectedIds]);
 
-  return <DataTable table={table} onRowClick={handleNavigateToFolder} />;
+  return <DataTable table={table} onRowClick={handleClick} />;
 }

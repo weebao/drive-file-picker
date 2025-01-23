@@ -14,10 +14,12 @@ import {
 
 interface KnowledgeBaseSelectProps {
   onCreateKb: () => void;
+  onSelect: (val: string) => void;
 }
 
 export const KnowledgeBaseSelect: React.FC<KnowledgeBaseSelectProps> = ({
   onCreateKb,
+  onSelect,
 }) => {
   const {
     kbList,
@@ -47,7 +49,11 @@ export const KnowledgeBaseSelect: React.FC<KnowledgeBaseSelectProps> = ({
         onValueChange={(val) => {
           if (val === "new") {
             setIsSelecting(true);
-          } else if (val === "root") {
+            return;
+          }
+
+          onSelect(val);
+          if (val === "root") {
             setSelectedKb(null);
           } else {
             const chosen = kbList.find((kb) => kb === val);

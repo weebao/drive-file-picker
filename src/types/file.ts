@@ -10,7 +10,11 @@ export type FileKind =
   | "Code"
   | "Folder";
 
-export type FileIndexStatus = "indexed" | "pending" | "unknown";
+export type FileIndexStatus =
+  | "indexed"
+  | "pending"
+  | "pending_delete"
+  | "deleted";
 
 export interface FileItem {
   id: string;
@@ -28,6 +32,7 @@ export interface FolderItem extends FileItem {
   kind: "Folder";
 }
 
-// Sorting fields for demonstration
-export type SortField = "name" | "lastModified" | "kind";
-export type SortDirection = "asc" | "desc";
+export interface RootData {
+  id: string;
+  path: string;
+}

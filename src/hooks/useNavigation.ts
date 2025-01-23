@@ -1,33 +1,40 @@
 "use client";
 
+import { RootData } from "@/types/file";
 import { useState } from "react";
-import type { NavigationState, NavigationActions } from "@/types/navigation";
-import { FolderItem } from "@/types/file";
 
-export function useNavigation(
-  initialPath = "/",
-): NavigationState & NavigationActions {
-  const [currentPath, setCurrentPath] = useState(initialPath);
-  const [history, setHistory] = useState([initialPath]); // history of resource ids (Visited by react query hopefully)
+export const useNavigation = (navigateCallback = (root: RootData) => {}) => {
+  const [currentPath, setCurrentPath] = useState("/");
+  const [history, setHistory] = useState<RootData[]>([{ id: "", path: "/" }]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
-  const navigateToFolder = (path: string) => {
+  const navigate = (id: string, path: string) => {
+    console.log("nav", path);
     setCurrentPath(path);
-    setHistory((prev) => [...prev.slice(0, historyIndex + 1), path]);
+    setHistory((prev) => [...prev.slice(0, historyIndex + 1), { id, path }]);
     setHistoryIndex((prev) => prev + 1);
+    navigateCallback({ id, path });
+  };
+
+  const navigateWithPath = (path: string) => {
+    console.log(path);
+    const id = history.find((h) => h.path === path)?.id || "";
+    navigate(id, path);
   };
 
   const goBack = () => {
     if (historyIndex > 0) {
       setHistoryIndex((prev) => prev - 1);
-      setCurrentPath(history[historyIndex - 1]);
+      setCurrentPath(history[historyIndex - 1].path);
+      navigateCallback(history[historyIndex - 1]);
     }
   };
 
   const goForward = () => {
     if (historyIndex < history.length - 1) {
       setHistoryIndex((prev) => prev + 1);
-      setCurrentPath(history[historyIndex + 1]);
+      setCurrentPath(history[historyIndex + 1].path);
+      navigateCallback(history[historyIndex + 1]);
     }
   };
 
@@ -35,8 +42,9 @@ export function useNavigation(
     currentPath,
     history,
     historyIndex,
-    navigateToFolder,
+    navigate,
+    navigateWithPath,
     goBack,
     goForward,
   };
-}
+};

@@ -13,89 +13,44 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Toolbar } from "./Toolbar";
 
 import type { ViewMode } from "@/types/view";
-import type {
-  SortField,
-  SortDirection,
-  FileItem,
-  FolderItem,
-} from "@/types/file";
+import type { FolderItem, RootData } from "@/types/file";
 
 import { useFiles } from "@/hooks/useFiles";
 import { useNavigation } from "@/hooks/useNavigation";
 import { TableSkeleton } from "./TableSkeleton";
-import { createKnowledgeBase } from "@/services/KnowledgeBaseService";
 
 export default function FileManager() {
+  const [root, setRoot] = useState<RootData>({ id: "", path: "/" });
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+
+  const { setFiles, searchQuery, setSearchQuery } = useFileManagerContext();
+  const { isSelecting } = useKnowledgeBaseContext();
   const {
-    root,
     files,
-    setRoot,
     isLoading,
     isRefetching,
     isSuccess,
     isError,
     reload,
-  } = useFiles();
-  const { setFiles, searchQuery, setSearchQuery } = useFileManagerContext();
-  const {
-    kbList,
-    isCreating,
-    isSelecting,
-    setIsCreating,
-    setIsSelecting,
-    setKbList,
-    setSelectedKb,
-  } = useKnowledgeBaseContext();
+    removeIndex,
+    createKb,
+  } = useFiles(root, setRoot);
   const {
     currentPath,
     history,
     historyIndex,
-    navigateToFolder,
+    navigate,
+    navigateWithPath,
     goBack,
     goForward,
-  } = useNavigation();
-
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [visitedPaths, setVisitedPaths] = useState<Record<string, FolderItem>>(
-    {},
-  );
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
-
-  useEffect(() => {
-    if (isSuccess || !isRefetching) {
-      setFiles(files);
-    }
-  }, [isSuccess, isRefetching, setFiles]);
+  } = useNavigation(setRoot);
 
   useEffect(() => {
     if (!isSelecting) {
       setSelectedIds([]);
     }
   }, [isSelecting]);
-
-  const handleNavigateToFolder = (folder: FolderItem) => {
-    navigateToFolder(folder.path);
-    setRoot(folder);
-    setVisitedPaths((prev) => ({ ...prev, [folder.path]: folder }));
-  };
-
-  const handleBreadcrumbNavigate = (path: string) => {
-    const folder = visitedPaths[path];
-    if (folder) {
-      navigateToFolder(folder.path);
-      setRoot(folder);
-    }
-  };
-
-  const handleCreateKb = async () => {
-    setIsCreating(true);
-    const kbId = await createKnowledgeBase(selectedIds);
-    console.log(kbId);
-    setSelectedKb(kbId);
-    setKbList([...kbList, kbId]);
-    setIsCreating(false);
-    setIsSelecting(false);
-  };
 
   return (
     <div className="flex flex-col h-[600px] bg-background">
@@ -108,10 +63,7 @@ export default function FileManager() {
             onBack={goBack}
             onForward={goForward}
           />
-          <FileBreadcrumb
-            path={currentPath}
-            onNavigate={handleBreadcrumbNavigate}
-          />
+          <FileBreadcrumb path={currentPath} onNavigate={navigateWithPath} />
           <div className="ml-auto">
             <Toolbar
               viewMode={viewMode}
@@ -119,7 +71,8 @@ export default function FileManager() {
               isRefetching={isRefetching}
               onViewModeChange={setViewMode}
               onSearchChange={setSearchQuery}
-              onCreateKb={handleCreateKb}
+              onCreateKb={() => createKb(selectedIds)}
+              resetRoot={() => setRoot({ id: "", path: "/" })}
               reload={reload}
             />
           </div>
@@ -137,14 +90,16 @@ export default function FileManager() {
             isSelecting={isSelecting}
             selectedIds={selectedIds}
             setSelectedIds={setSelectedIds}
-            onNavigate={handleNavigateToFolder}
+            onNavigate={navigate}
+            removeIndex={removeIndex}
           />
         ) : (
           <GridView
             isSelecting={isSelecting}
             selectedIds={selectedIds}
             setSelectedIds={setSelectedIds}
-            onNavigate={handleNavigateToFolder}
+            onNavigate={navigate}
+            removeIndex={removeIndex}
           />
         )}
       </div>

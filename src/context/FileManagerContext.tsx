@@ -29,6 +29,7 @@ export const FileManagerProvider: React.FC<FileManagerProviderProps> = ({
     if (!files) return [];
     return files
       .filter((f) => f.path !== "/")
+      .filter((f) => f.status !== "pending_delete" && f.status !== "deleted")
       .filter((f) => f.name.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [files, searchQuery]);
 

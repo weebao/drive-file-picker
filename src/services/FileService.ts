@@ -13,6 +13,5 @@ export async function getFiles(resourceId?: string): Promise<FileItem[]> {
     throw new Error("Failed to fetch files.");
   }
   const data = await res.json();
-  console.log(data);
   return data.map((fileData: any) => processFile(fileData)) as FileItem[];
 }

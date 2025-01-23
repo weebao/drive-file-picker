@@ -11,9 +11,11 @@ import { ToggleIndexBtn } from "../ToggleIndexBtn";
 
 interface GridViewProps {
   isSelecting?: boolean;
+  isRemoveSuccess?: boolean;
   selectedIds?: string[];
   setSelectedIds?: (ids: string[]) => void;
-  onNavigate: (file: FolderItem) => void;
+  onNavigate: (folderId: string, folderPath: string) => void;
+  removeIndex: (file: FileItem) => void;
 }
 
 export function GridView({
@@ -21,6 +23,7 @@ export function GridView({
   selectedIds,
   setSelectedIds,
   onNavigate,
+  removeIndex,
 }: GridViewProps) {
   const { displayed } = useFileManagerContext();
 
@@ -31,6 +34,15 @@ export function GridView({
       setSelectedIds(selectedIds.filter((id) => id !== fileId));
     } else {
       setSelectedIds([...(selectedIds || []), fileId]);
+    }
+  };
+
+  const handleClick = (file: FileItem) => {
+    if (isSelecting) return;
+    if (file.kind === "Folder") {
+      onNavigate(file.id, file.path);
+    } else {
+      window.open(file.webUrl, "_blank")?.focus();
     }
   };
 
@@ -48,14 +60,12 @@ export function GridView({
           <ToggleIndexBtn
             className="absolute top-1 right-2"
             status={file.status}
-            onToggle={() => console.log(`Toggled index status for file ${file.id}`)}
+            onRemove={() => removeIndex(file)}
           />
           <Button
             variant="ghost"
             className="w-full h-full p-4 flex flex-col items-center gap-2 hover:bg-accent"
-            onClick={() =>
-              file.kind === "Folder" && onNavigate(file as FolderItem)
-            }
+            onClick={() => handleClick(file)}
           >
             <FileIcon file={file} className="!h-8 !w-8 stroke-[1.25]" />
             <span className="text-sm text-center text-wrap line-clamp-3 break-words">

@@ -25,6 +25,7 @@ interface ToolbarProps {
   onViewModeChange: (mode: ViewMode) => void;
   onSearchChange: (query: string) => void;
   onCreateKb: () => void;
+  resetRoot: () => void;
   reload: () => void;
 }
 
@@ -36,6 +37,7 @@ export function Toolbar({
   onViewModeChange,
   onSearchChange,
   onCreateKb,
+  resetRoot,
   reload,
 }: ToolbarProps) {
   const [searchVisible, setSearchVisible] = useState(false);
@@ -44,7 +46,7 @@ export function Toolbar({
   return (
     <TooltipProvider delayDuration={300}>
       <div className="flex items-center gap-2">
-        <KnowledgeBaseSelect onCreateKb={onCreateKb} />
+        <KnowledgeBaseSelect onCreateKb={onCreateKb} onSelect={resetRoot} />
 
         <ToggleGroup
           type="single"

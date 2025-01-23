@@ -30,7 +30,7 @@ export function FileBreadcrumb({ path, onNavigate }: FileBreadcrumbProps) {
           </BreadcrumbLink>
         </BreadcrumbItem>
         {segments.map((segment, index) => {
-          const currentPath = "/" + segments.slice(0, index + 1).join("/");
+          const currentPath = segments.slice(0, index + 1).join("/");
           const isLast = index === segments.length - 1;
 
           return (
