@@ -9,7 +9,7 @@ interface FileManagerProviderProps {
 
 interface FileManagerContextValue {
   files: FileItem[];
-  setFiles: (files: FileItem[]) => void
+  setFiles: (files: FileItem[]) => void;
   displayed: FileItem[];
   searchQuery: string;
   setSearchQuery: (query: string) => void;

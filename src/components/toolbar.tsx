@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Grid, List, Search } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { SearchBar } from "./search-bar";
+import { SearchBar } from "./SearchBar";
 import { Button } from "@/components/ui/button";
 import type { ViewMode } from "@/types/view";
 

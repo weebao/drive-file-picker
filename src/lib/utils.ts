@@ -14,7 +14,8 @@ export const extractExtension = (fileName: string): string => {
 
 export const processFile = (fileData: any): FileItem => {
   const isFolder = fileData.inode_type === "directory";
-  const name = fileData.inode_path.path.split("/").pop() || fileData.inode_path.path;
+  const name =
+    fileData.inode_path.path.split("/").pop() || fileData.inode_path.path;
   return {
     id: fileData.resource_id,
     name,

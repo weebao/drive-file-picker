@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getFiles, toggleIndex } from "@/services/file-client";
+import { getFiles, toggleIndex } from "@/services/FileService";
 import type { FileItem } from "@/types/file";
 
 export function useFiles() {
@@ -15,7 +15,9 @@ export function useFiles() {
   const toggleMutation = useMutation({
     mutationFn: (fileId: string) => toggleIndex(fileId),
     onMutate: async (fileId) => {
-      await queryClient.cancelQueries({ queryKey: ["fileList", root?.resourceId] });
+      await queryClient.cancelQueries({
+        queryKey: ["fileList", root?.resourceId],
+      });
       const prevData = queryClient.getQueryData<FileItem[]>([
         "fileList",
         root?.resourceId,
@@ -30,15 +32,21 @@ export function useFiles() {
     },
     onError: (_err, _fileId, context) => {
       if (context?.prevData) {
-        queryClient.setQueryData(["fileList", root?.resourceId], context.prevData);
+        queryClient.setQueryData(
+          ["fileList", root?.resourceId],
+          context.prevData,
+        );
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["fileList", root?.resourceId] });
+      queryClient.invalidateQueries({
+        queryKey: ["fileList", root?.resourceId],
+      });
     },
   });
 
-  const toggleIndexOptimistic = (fileId: string) => toggleMutation.mutate(fileId);
+  const toggleIndexOptimistic = (fileId: string) =>
+    toggleMutation.mutate(fileId);
 
   return {
     root,

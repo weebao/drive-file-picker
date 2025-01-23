@@ -10,7 +10,6 @@ interface SearchBarProps {
   onClose: () => void;
 }
 
-// Single responsibility: present a search input with a close button
 export function SearchBar({ value, onChange, onClose }: SearchBarProps) {
   return (
     <div className="relative">

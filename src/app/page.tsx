@@ -1,4 +1,4 @@
-import FileManager from "@/components/file-manager";
+import FileManager from "@/components/FileManager";
 import Image from "next/image";
 
 export default function Home() {

@@ -1,12 +1,12 @@
 "use client";
 
 import { ColumnDef, Column } from "@tanstack/react-table";
-import { ArrowUp, ArrowDown, Minus, Check, X } from "lucide-react";
+import { ArrowUp, ArrowDown, Minus } from "lucide-react";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import type { FileItem } from "@/types/file";
-import { Button } from "@/components/ui/button";
+import { FileIcon } from "@/components/FileIcon";
 
-// Minimal toggle sorting arrow function
 interface DataTableColumnHeaderProps<TData, TValue> {
   column: Column<TData, TValue>;
   title: string;
@@ -43,7 +43,7 @@ const DataTableColumnHeader = <TData, TValue>({
 };
 
 export const fileColumns: ColumnDef<FileItem>[] = [
-  // 1) Checkboxes for row selection
+  // Checkboxes for row selection
   {
     id: "select",
     header: ({ table }) => (
@@ -66,41 +66,44 @@ export const fileColumns: ColumnDef<FileItem>[] = [
     enableSorting: false,
     enableColumnFilter: false,
   },
-  // 2) Name (sortable)
+  // Name (sortable)
   {
     id: "name",
     accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
+    cell: ({ row }) => {
+      const file = row.original;
+      return (
+        <div className="flex items-center">
+          <FileIcon file={file} className="!h-5 !w-5 mr-2 stroke-[1.5] opacity-70" />
+          <span>{file.name}</span>
+        </div>
+      );
+    },
     enableSorting: true,
   },
-  // 3) Indexed column -> Check or X
+  // Indexed column -> Check or X
   {
-    accessorKey: "indexedStatus",
+    id: "indexed",
+    accessorKey: "indexed",
     enableSorting: true,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Indexed" />
     ),
-    cell: ({ row }) => {
-      const file = row.original;
-      return file.isIndexed ? (
-        <Check className="h-4 w-4 text-green-500" />
-      ) : (
-        <X className="h-4 w-4 text-red-500" />
-      );
-    },
     sortingFn: (rowA, rowB) => {
       const a = rowA.original.isIndexed ? 1 : 0;
       const b = rowB.original.isIndexed ? 1 : 0;
       return a - b;
     },
   },
-  // 4) Date Modified
+  // Last Modified
   {
+    id: "lastModified",
     accessorKey: "lastModified",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date Modified" />
+      <DataTableColumnHeader column={column} title="Last Modified" />
     ),
     enableSorting: true,
     cell: ({ row }) => {
@@ -108,8 +111,9 @@ export const fileColumns: ColumnDef<FileItem>[] = [
       return date.toLocaleString();
     },
   },
-  // 5) Kind
+  // Kind
   {
+    id: "kind",
     accessorKey: "kind",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Kind" />
