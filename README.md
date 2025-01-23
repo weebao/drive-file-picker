@@ -1,34 +1,47 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Google Drive File Picker
 
-## Getting Started
+## Setting up
 
-First, run the development server:
+Before setting up, make sure you have the `.env` file ready so this can be connected to the backend. It should follow the format below:
+
+```env
+AUTH_EMAIL=test@email.com
+AUTH_PASSWORD=password
+AUTH_URL=https://api.example.com
+SUPABASE_URL=https://sb.example.com
+API_KEY=example-api-key
+```
+
+To set up the project, follow these steps:
+
+1. Install the dependencies:
+
+```bash
+npm install
+```
+
+2. For developing, it's recommended to run in the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+or
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+next dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+3. To see how the app looks like in production locally, run:
 
-## Learn More
+```bash
+npm run build
+npm run serve
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Tech Stacks
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- **TanStack Query**: For data fetching and caching. Super straightforward to work with
+- **TanStack Table**: A powerful tool for making tables, though it can get a bit overwhelming for those who are new
+- **React Context API**: I chose this over Redux or Zustand since the state management flow in this app is rather simple and doesn't require complex logics so a global dependency injection API like Context is already a great choice
+- **Next.js** and **Shadcn**
