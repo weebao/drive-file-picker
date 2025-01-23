@@ -41,6 +41,7 @@ npm run serve
 
 ### Tech Stacks
 
+- **Bun**: Incredible tool with fast runtime. This app is still runnable with `npm` of course.
 - **TanStack Query**: For data fetching and caching. Super straightforward to work with
 - **TanStack Table**: A powerful tool for making tables, though it can get a bit overwhelming for those who are new
 - **React Context API**: I chose this over Redux or Zustand since the state management flow in this app is rather simple and doesn't require complex logics so a global dependency injection API like Context is already a great choice
