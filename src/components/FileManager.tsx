@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import { useFileManagerContext } from "@/context/FileManagerContext";
 import { useKnowledgeBaseContext } from "@/context/KnowledgeBaseContext";
 
+import { Toolbar } from "@/components/Toolbar";
 import { NavigationControls } from "@/components/navigation/NavigationControls";
 import { FileBreadcrumb } from "@/components/navigation/FileBreadcrumb";
 import { ListView } from "@/components/view/ListView";
 import { GridView } from "@/components/view/GridView";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Toolbar } from "./Toolbar";
 
 import type { RootData } from "@/types/file";
 
