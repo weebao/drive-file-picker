@@ -45,7 +45,6 @@ export class FileSession {
   private async fetchOrgId() {
     const orgUrl = `${process.env.AUTH_URL}/organizations/me/current`;
     const orgRes = await fetch(orgUrl, { headers: this.headers });
-    console.log(orgUrl);
     if (!orgRes.ok) {
       throw new Error("Failed to fetch organization ID");
     }

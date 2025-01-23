@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getFiles } from "@/services/FileService";
 import {
   getFilesFromKb,
@@ -43,30 +39,39 @@ export const useFiles = (root: RootData, setRoot: (root: RootData) => void) => {
     if (data) {
       setFiles(data);
     }
-  }, [data]);
+  }, [data, setFiles]);
 
   const createKbMutation = useMutation({
     mutationFn: (selectedIds: string[]) => createKnowledgeBase(selectedIds),
     onMutate: async (selectedIds) => {
       setIsCreating(true);
       // setRoot({ id: "", path: "/" });
-      await queryClient.cancelQueries({ queryKey: ["fileList", root.id, root.path, kb] });
+      await queryClient.cancelQueries({
+        queryKey: ["fileList", root.id, root.path, kb],
+      });
       const prevFiles = queryClient.getQueryData<FileItem[]>([
         "fileList",
-        root.id, root.path,
+        root.id,
+        root.path,
         kb,
       ]);
       const prevKbList = kbList;
       if (prevFiles) {
         const nextFiles = prevFiles.filter((f) => selectedIds.includes(f.id));
-        queryClient.setQueryData(["fileList", root.id, root.path, kb], nextFiles);
+        queryClient.setQueryData(
+          ["fileList", root.id, root.path, kb],
+          nextFiles,
+        );
       }
       setKbList([...kbList, "loading-id"]);
       return { prevKbList, prevFiles };
     },
     onError: (_err, _selectedIds, context) => {
       if (context?.prevFiles) {
-        queryClient.setQueryData(["fileList", root.id, root.path, kb], context.prevFiles);
+        queryClient.setQueryData(
+          ["fileList", root.id, root.path, kb],
+          context.prevFiles,
+        );
       }
       if (context?.prevKbList) {
         setKbList(context.prevKbList);
@@ -82,7 +87,9 @@ export const useFiles = (root: RootData, setRoot: (root: RootData) => void) => {
       setIsSelecting(false);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["fileList", root.id, root.path, kb] });
+      queryClient.invalidateQueries({
+        queryKey: ["fileList", root.id, root.path, kb],
+      });
     },
   });
 
@@ -96,19 +103,26 @@ export const useFiles = (root: RootData, setRoot: (root: RootData) => void) => {
       // Snapshot the previous value
       const prevData = queryClient.getQueryData<FileItem[]>([
         "fileList",
-        root.id, root.path,
+        root.id,
+        root.path,
         kb,
       ]);
       if (prevData) {
         const nextData = prevData.filter((f) => f.id !== file.id);
-        queryClient.setQueryData(["fileList", root.id, root.path, kb], nextData);
+        queryClient.setQueryData(
+          ["fileList", root.id, root.path, kb],
+          nextData,
+        );
       }
       return { prevData };
     },
     onError: (_err, _file, context) => {
       // Roll back to the previous value if error
       if (context?.prevData) {
-        queryClient.setQueryData(["fileList", root.id, root.path, kb], context.prevData);
+        queryClient.setQueryData(
+          ["fileList", root.id, root.path, kb],
+          context.prevData,
+        );
       }
     },
     onSettled: () => {
@@ -135,4 +149,4 @@ export const useFiles = (root: RootData, setRoot: (root: RootData) => void) => {
     reload: refetch,
     createKb,
   };
-}
+};

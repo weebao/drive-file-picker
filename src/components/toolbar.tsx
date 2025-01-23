@@ -29,7 +29,6 @@ interface ToolbarProps {
   reload: () => void;
 }
 
-// Single responsibility: top-level toolbar with toggle for grid/list + search
 export function Toolbar({
   viewMode,
   searchQuery,

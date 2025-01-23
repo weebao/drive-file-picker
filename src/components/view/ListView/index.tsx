@@ -3,27 +3,20 @@
 import { useEffect, useState } from "react";
 import {
   CellContext,
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-  type OnChangeFn,
   type RowSelectionState,
 } from "@tanstack/react-table";
-import { Check, X } from "lucide-react";
 
 import { useFileManagerContext } from "@/context/FileManagerContext";
 
-import { FileIcon } from "@/components/FileIcon";
 import { DataTable } from "@/components/ui/data-table";
 import { fileColumns } from "./Columns";
-
-import { useFiles } from "@/hooks/useFiles";
 
 import type { FileItem } from "@/types/file";
 import { ToggleIndexBtn } from "@/components/ToggleIndexBtn";

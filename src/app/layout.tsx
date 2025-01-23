@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           {children}
-          <ReactQueryDevtools initialIsOpen={false} />
+          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
         </Providers>
       </body>
     </html>

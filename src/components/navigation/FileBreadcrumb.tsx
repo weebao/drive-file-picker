@@ -17,7 +17,6 @@ interface FileBreadcrumbProps {
   onNavigate: (path: string) => void;
 }
 
-// Single responsibility: display a navigable breadcrumb for the file path
 export function FileBreadcrumb({ path, onNavigate }: FileBreadcrumbProps) {
   const segments = path.split("/").filter(Boolean);
 

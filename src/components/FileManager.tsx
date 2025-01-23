@@ -12,12 +12,12 @@ import { GridView } from "@/components/view/GridView";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toolbar } from "./Toolbar";
 
-import type { ViewMode } from "@/types/view";
-import type { FolderItem, RootData } from "@/types/file";
+import type { RootData } from "@/types/file";
 
 import { useFiles } from "@/hooks/useFiles";
 import { useNavigation } from "@/hooks/useNavigation";
 import { TableSkeleton } from "./TableSkeleton";
+import { ViewMode } from "@/types/view";
 
 export default function FileManager() {
   const [root, setRoot] = useState<RootData>({ id: "", path: "/" });

@@ -9,7 +9,6 @@ export const useNavigation = (navigateCallback = (root: RootData) => {}) => {
   const [historyIndex, setHistoryIndex] = useState(0);
 
   const navigate = (id: string, path: string) => {
-    console.log("nav", path);
     setCurrentPath(path);
     setHistory((prev) => [...prev.slice(0, historyIndex + 1), { id, path }]);
     setHistoryIndex((prev) => prev + 1);
@@ -17,7 +16,6 @@ export const useNavigation = (navigateCallback = (root: RootData) => {}) => {
   };
 
   const navigateWithPath = (path: string) => {
-    console.log(path);
     const id = history.find((h) => h.path === path)?.id || "";
     navigate(id, path);
   };

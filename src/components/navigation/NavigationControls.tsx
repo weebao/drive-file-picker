@@ -10,7 +10,6 @@ interface NavigationControlsProps {
   onForward: () => void;
 }
 
-// Single responsibility: present "back" and "forward" controls
 export function NavigationControls({
   canGoBack,
   canGoForward,
